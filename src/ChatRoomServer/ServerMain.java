@@ -63,8 +63,7 @@ public class ServerMain {
                 s = user.username + " has disconnected!";
             else
                 s = user.username + ": " + message;
-            for (ClientSession cl : clientSessions)
-                cl.Send(s);
+            for (ClientSession cl : clientSessions) if (cl != user) cl.Send(s);
 
         }
 

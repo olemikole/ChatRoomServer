@@ -31,9 +31,6 @@ public class ClientSession implements Runnable {
 			System.out.println("New client has arrived");
 
 			username = in.readLine();
-			System.out.println(username + " is ready to chat");
-			out.println("#############\nWELCOME TO SERVER");
-			out.flush();
 
 			while (running) {
 				inputMessage = in.readLine();

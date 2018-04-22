@@ -73,6 +73,7 @@ public class ChatServer {
 
     public void sendOnlineUsersUpdate(){
 
+        // TODO sende update til alle som er paalogget
     }
 
     private String getStringWithOnlineUsers() {

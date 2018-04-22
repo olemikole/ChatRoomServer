@@ -1,5 +1,4 @@
-    package ChatRoomServer;
-
+package ChatRoomServer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,37 +8,35 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ServerMain {
+public class ChatServer {
 
     ServerSocket serverSocket;
     Socket currentClientSocket;
     ClientSession currentClient;
-    BufferedReader br;
     BufferedReader in;
     PrintWriter out;
 
-    public static ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>();
+    public static ArrayList<ClientSession> clientSessions = new ArrayList<>();
 
-    private ServerMain(int port) {
+    public final static String LOGOUT_COMMAND = "/logout";
+
+    private ChatServer(int port) {
         try {
             serverSocket = new ServerSocket(port);
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+         catch (IOException e) {
+             e.printStackTrace();
+         }
     }
 
     public static void main(String[] args) {
-        new ServerMain(61000).startServer();
-        //dominik
+        new ChatServer(61000).startServer();
     }
 
     private void startServer() {
-
         System.out.println("Server is ready");
         try {
             while (true) {
-
                 currentClientSocket = serverSocket.accept();
                 out = new PrintWriter(currentClientSocket.getOutputStream());
                 in = new BufferedReader(new InputStreamReader(currentClientSocket.getInputStream()));
@@ -48,32 +45,28 @@ public class ServerMain {
                 new Thread(currentClient).start();
 
                 clientSessions.add(currentClient);
-
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
-    public void Send(String message, ClientSession user) {// sends to all clients except sender
+    public void send(String message, ClientSession user) {
         synchronized (clientSessions) {
-            String s;
-            if (message.equals("/logout"))
-                s = user.username + " has disconnected!";
+            String stringToSent;
+            if (message.equals(ChatServer.LOGOUT_COMMAND))
+                stringToSent = user.username + " has disconnected!";
             else
-                s = user.username + ": " + message;
-            for (ClientSession cl : clientSessions) if (cl != user) cl.Send(s);
-
+                stringToSent = user.username + ": " + message;
+            for (ClientSession cl : clientSessions) {
+                if (cl != user) cl.sendMessage(stringToSent);
+            }
         }
-
     }
 
-    public void removeMyReference(ClientSession cl)// removes the reference to a session
-    {
+    public void removeMyReference(ClientSession cl) {
         synchronized (clientSessions) {
             clientSessions.remove(clientSessions.indexOf(cl));
         }
-
     }
 }

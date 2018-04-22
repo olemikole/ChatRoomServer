@@ -19,6 +19,7 @@ public class ChatServer {
     public static ArrayList<ClientSession> clientSessions = new ArrayList<>();
 
     public final static String LOGOUT_COMMAND = "/logout";
+    public final static String USERS_UPDATE_COMMAND = "/update-users";
 
     private ChatServer(int port) {
         try {
@@ -51,15 +52,15 @@ public class ChatServer {
         }
     }
 
-    public void send(String message, ClientSession user) {
+    public void send(String message, ClientSession currentClient) {
         synchronized (clientSessions) {
             String stringToSent;
             if (message.equals(ChatServer.LOGOUT_COMMAND))
-                stringToSent = user.username + " has disconnected!";
+                stringToSent = currentClient.username + " has disconnected!";
             else
-                stringToSent = user.username + ": " + message;
-            for (ClientSession cl : clientSessions) {
-                if (cl != user) cl.sendMessage(stringToSent);
+                stringToSent = currentClient.username + ": " + message;
+            for (ClientSession clientSession : clientSessions) {
+                if (clientSession != currentClient) clientSession.sendMessage(stringToSent);
             }
         }
     }
@@ -68,5 +69,20 @@ public class ChatServer {
         synchronized (clientSessions) {
             clientSessions.remove(clientSessions.indexOf(cl));
         }
+    }
+
+    public void sendOnlineUsersUpdate(){
+
+    }
+
+    private String getStringWithOnlineUsers() {
+        // lager en String med alle usernames som er tilkoblet
+        String onlineUsers = "";
+        synchronized (clientSessions) {
+            for (ClientSession clientSession : clientSessions) {
+                onlineUsers += clientSession.username + " ";
+            }
+        }
+        return onlineUsers;
     }
 }

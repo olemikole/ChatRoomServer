@@ -11,9 +11,9 @@ public class ClientSession implements Runnable {
 	String username;
 
 	ClientSession(BufferedReader _in, PrintWriter _out, ChatServer _server) {
-		server = _server;
-		in = _in;
-		out = _out;
+		this.server = _server;
+		this.in = _in;
+		this.out = _out;
 		}
 
 	@Override

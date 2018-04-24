@@ -19,15 +19,15 @@ public class ChatServer {
     public static ArrayList<ClientSession> clientSessions = new ArrayList<>();
 
     public final static String LOGOUT_COMMAND = "/logout";
+    public final static String LOGIN_COMMAND = "/login";
     public final static String USERS_UPDATE_COMMAND = "/update-users";
 
     private ChatServer(int port) {
         try {
             serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-         catch (IOException e) {
-             e.printStackTrace();
-         }
     }
 
     public static void main(String[] args) {
@@ -41,7 +41,7 @@ public class ChatServer {
                 currentClientSocket = serverSocket.accept();
                 out = new PrintWriter(currentClientSocket.getOutputStream());
                 in = new BufferedReader(new InputStreamReader(currentClientSocket.getInputStream()));
-                currentClient = new ClientSession(in, out, this);
+                currentClient = new ClientSession(in, out, this,currentClientSocket);
 
                 new Thread(currentClient).start();
 
@@ -55,28 +55,27 @@ public class ChatServer {
     public void send(String message, ClientSession currentClient) {
         synchronized (clientSessions) {
             String stringToSent;
-            if (message.equals(ChatServer.LOGOUT_COMMAND))
-                stringToSent = currentClient.username + " has disconnected!";
+            if (currentClient==null)
+                stringToSent = "SERVER: Online Users "+getStringWithOnlineUsers();
             else
                 stringToSent = currentClient.username + ": " + message;
             for (ClientSession clientSession : clientSessions) {
-                if (clientSession != currentClient) clientSession.sendMessage(stringToSent);
+                if (clientSession != currentClient)
+                    clientSession.sendMessage(stringToSent);
             }
         }
     }
 
     public void removeMyReference(ClientSession cl) {
         synchronized (clientSessions) {
+
             clientSessions.remove(clientSessions.indexOf(cl));
         }
     }
 
-    public void sendOnlineUsersUpdate(){
 
-        // TODO sende update til alle som er paalogget
-    }
 
-    private String getStringWithOnlineUsers() {
+    public String getStringWithOnlineUsers() {
         // lager en String med alle usernames som er tilkoblet
         String onlineUsers = "";
         synchronized (clientSessions) {

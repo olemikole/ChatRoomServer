@@ -29,11 +29,14 @@ public class ClientSession implements Runnable {
 
 			username = in.readLine();
 			System.out.println(username + " is ready to chat");
-			server.send(null, null);
+			server.sendUpdate();
 			while (running) {
 				inputMessage = in.readLine();
-				System.out.println(username + ": " + inputMessage);
-				server.send(inputMessage, this);
+				if(inputMessage==null) running=false;
+                else{
+                    System.out.println(username + ": " + inputMessage);
+                    server.send(inputMessage, this);
+                }
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -48,7 +51,7 @@ public class ClientSession implements Runnable {
                 }
             }
 			System.out.println(username + " disconnected");
-			server.send(null, null);
+			server.sendUpdate();
 			System.out.println(ChatServer.clientSessions.size() + " people on the server");
 		}
 	}

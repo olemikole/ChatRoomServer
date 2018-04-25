@@ -55,14 +55,19 @@ public class ChatServer {
     public void send(String message, ClientSession currentClient) {
         synchronized (clientSessions) {
             String stringToSent;
-            if (currentClient==null)
-                stringToSent = "SERVER: Online Users "+getStringWithOnlineUsers();
-            else
-                stringToSent = currentClient.username + ": " + message;
+            stringToSent = currentClient.username + ": " + message;
             for (ClientSession clientSession : clientSessions) {
                 if (clientSession != currentClient)
                     clientSession.sendMessage(stringToSent);
             }
+        }
+    }
+
+    public void sendUpdate()
+    {
+        String stringToSent = "SERVER:Online Users "+getStringWithOnlineUsers();
+        for (ClientSession clientSession : clientSessions) {
+            clientSession.sendMessage(stringToSent);
         }
     }
 

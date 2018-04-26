@@ -18,9 +18,7 @@ public class ChatServer {
 
     public static ArrayList<ClientSession> clientSessions = new ArrayList<>();
 
-    public final static String LOGOUT_COMMAND = "/logout";
-    public final static String LOGIN_COMMAND = "/login";
-    public final static String USERS_UPDATE_COMMAND = "/update-users";
+
 
     private ChatServer(int port) {
         try {
